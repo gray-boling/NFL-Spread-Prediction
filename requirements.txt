@@ -1,5 +1,3 @@
-pandas==1.0.5
-requests==2.24.0
 streamlit==0.71.0
 selenium==3.141.0
 lightgbm==3.0.0
