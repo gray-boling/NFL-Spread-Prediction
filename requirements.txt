@@ -5,3 +5,4 @@ selenium==3.141.0
 lightgbm==3.0.0
 numpy==1.19.0
 beautifulsoup4==4.9.3
+python==3.9.6
