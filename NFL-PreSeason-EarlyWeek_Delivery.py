@@ -3,27 +3,27 @@ import numpy as np
 import lightgbm as lgb
 import streamlit as st
 
-st.write("""
-# **NFL Game Predictor**
+st.title('NFL Spread Predictor')
 
-## How to read the results:
+st.caption("""
+# How to read the results:
 
-### **Margin: Positive numbers are the margins predicted in favor of the Home Team, negative margins are for the Away Team.**
+## **Margin: Positive numbers are margins predicted in favor of the Home Team. Negative margins are for the Away Team.**
 
 
-### **Confidence:**
+## **Confidence:**
 
 - 1 =  Home Team classified as winner
 - 0 =  Pass, too close to classify either as outright winner
 - -1 = Away Team classified as winner
 
-
-#### ** For best results only consider games where the margin and confidence models agree on the winning team.
-
-**
-
-
 """)
+
+
+st.write("""
+#### For best results only consider games where the margin and confidence models agree on the winning team.
+""")
+
 
 team_dict = {'atl':'Atlanta Falcons', 'buf':'Buffalo Bills', 'car':'Carolina Panthers', 'chi':'Chicago Bears', 'cin':'Cincinnati Bengals', 'cle':'Cleveland Browns', 'clt':'Indianapolis Colts', 'crd':'Arizona Cardinals',
          'dal':'Dallas Cowboys', 'den':'Denver Broncos', 'det':'Detroit Lions', 'gnb':'Green Bay Packers', 'htx':'Houston Texans', 'jax':'Jacksonville Jaguars', 'kan':'Kansas City Chiefs', 'mia':'Miami Dolphins', 
@@ -87,13 +87,15 @@ X_class = to_pred.drop(['Week', 'Home', 'Date', 'Tm', 'Result', 'DEFPassY',  'OF
 y_class = to_pred['Result'].copy()
 
 
-
+#loading models
 regmodel = lgb.Booster(model_file='NFLregmodel_rmse_3_4_.txt')
 classmodel = lgb.Booster(model_file='classmodel_new_18_logloss.txt')
 
+#inference
 reg_preds = regmodel.predict(X_reg)
 class_preds = classmodel.predict(X_class)
 
+#building df with predictions for user readability
 totals = [to_pred['Team'], to_pred['Opp_Name'], pd.Series(reg_preds), pd.Series(np.round(class_preds))]
 df_del = pd.concat(totals, axis=1)
 df_del.columns = ['Team','Opp_Name','Pts','W/L']
@@ -133,5 +135,62 @@ prepared_df.Margin = prepared_df.Margin.round(1)
 
 finished_df = prepared_df.drop(['Home_Score', 'Away_Score', 'Home_W/L', 'Away_W/L'], axis=1)
 # finished_df.Home_Team = finished_df.Home_Team.map(team_dict)
-st.dataframe(finished_df)
-# print(reg_preds)
+# st.dataframe(finished_df)
+
+
+#building df with team logos
+
+#@title Attach images to dataframe by team/ test
+# from IPython.display import HTML
+
+#Link to .csv file with links to logos per team
+logos = pd.read_csv("https://raw.githubusercontent.com/leesharpe/nfldata/master/data/logos.csv")
+
+#dict to link each team's name to the correct url
+logos_dict = {'Arizona Cardinals': 'https://upload.wikimedia.org/wikipedia/en/thumb/7/72/Arizona_Cardinals_logo.svg/179px-Arizona_Cardinals_logo.svg.png', 
+              'Buffalo Bills': 'https://upload.wikimedia.org/wikipedia/en/thumb/7/77/Buffalo_Bills_logo.svg/189px-Buffalo_Bills_logo.svg.png', 
+              'Atlanta Falcons': 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c5/Atlanta_Falcons_logo.svg/192px-Atlanta_Falcons_logo.svg.png', 
+              'Baltimore Ravens': 'https://upload.wikimedia.org/wikipedia/en/thumb/1/16/Baltimore_Ravens_logo.svg/193px-Baltimore_Ravens_logo.svg.png', 
+              'Cincinnati Bengals':  'https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/Cincinnati_Bengals_logo.svg/100px-Cincinnati_Bengals_logo.svg.png',
+              'Carolina Panthers': 'https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Carolina_Panthers_logo.svg/100px-Carolina_Panthers_logo.svg.png',
+              'Cleveland Browns':  'https://upload.wikimedia.org/wikipedia/en/thumb/d/d9/Cleveland_Browns_logo.svg/100px-Cleveland_Browns_logo.svg.png',
+              'Indianapolis Colts': 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Indianapolis_Colts_logo.svg/100px-Indianapolis_Colts_logo.svg.png', 
+              'Chicago Bears': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Chicago_Bears_logo.svg/100px-Chicago_Bears_logo.svg.png', 
+              'Dallas Cowboys':  'https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Dallas_Cowboys.svg/100px-Dallas_Cowboys.svg.png',
+              'Denver Broncos':  'https://upload.wikimedia.org/wikipedia/en/thumb/4/44/Denver_Broncos_logo.svg/100px-Denver_Broncos_logo.svg.png',
+              'Detroit Lions':  'https://upload.wikimedia.org/wikipedia/en/thumb/7/71/Detroit_Lions_logo.svg/100px-Detroit_Lions_logo.svg.png',
+              'Green Bay Packers': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Green_Bay_Packers_logo.svg/100px-Green_Bay_Packers_logo.svg.png',
+              'Houston Texans': 'https://upload.wikimedia.org/wikipedia/en/thumb/2/28/Houston_Texans_logo.svg/100px-Houston_Texans_logo.svg.png',
+              'Jacksonville Jaguars': 'https://upload.wikimedia.org/wikipedia/en/thumb/7/74/Jacksonville_Jaguars_logo.svg/100px-Jacksonville_Jaguars_logo.svg.png', 
+              'Kansas City Chiefs': 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png',
+              'Miami Dolphins': 'https://upload.wikimedia.org/wikipedia/en/thumb/3/37/Miami_Dolphins_logo.svg/100px-Miami_Dolphins_logo.svg.png',
+              'Minnesota Vikings': 'https://upload.wikimedia.org/wikipedia/en/thumb/4/48/Minnesota_Vikings_logo.svg/98px-Minnesota_Vikings_logo.svg.png', 
+              'New Orleans Saints': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/New_Orleans_Saints_logo.svg/98px-New_Orleans_Saints_logo.svg.png', 
+              'New England Patriots': 'https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/New_England_Patriots_logo.svg/100px-New_England_Patriots_logo.svg.png', 
+              'New York Giants': 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/New_York_Giants_logo.svg/100px-New_York_Giants_logo.svg.png', 
+              'New York Jets': 'https://upload.wikimedia.org/wikipedia/en/thumb/6/6b/New_York_Jets_logo.svg/100px-New_York_Jets_logo.svg.png', 
+              'Tennessee Titans': 'http://www.nflgamedata.com/ten.png', 
+              'Philadelphia Eagles': 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Philadelphia_Eagles_logo.svg/100px-Philadelphia_Eagles_logo.svg.png', 
+              'Pittsburgh Steelers': 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Pittsburgh_Steelers_logo.svg/100px-Pittsburgh_Steelers_logo.svg.png', 
+              'Las Vegas Raiders': 'https://upload.wikimedia.org/wikipedia/en/thumb/4/48/Las_Vegas_Raiders_logo.svg/100px-Las_Vegas_Raiders_logo.svg.png', 
+              'Los Angeles Rams': 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/Los_Angeles_Rams_logo.svg/100px-Los_Angeles_Rams_logo.svg.png',
+              'Los Angeles Chargers': 'https://upload.wikimedia.org/wikipedia/en/thumb/7/72/NFL_Chargers_logo.svg/100px-NFL_Chargers_logo.svg.png', 
+              'Seattle Seahawks': 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Seattle_Seahawks_logo.svg/100px-Seattle_Seahawks_logo.svg.png', 
+              'San Francisco 49ers': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/San_Francisco_49ers_logo.svg/100px-San_Francisco_49ers_logo.svg.png', 
+              'Tampa Bay Buccaneers': 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/Tampa_Bay_Buccaneers_logo.svg/100px-Tampa_Bay_Buccaneers_logo.svg.png', 
+              'Washington Football Team': 'http://www.nflgamedata.com/was.png'}
+
+reverse_logos = dict(zip(logos_dict.values(), logos_dict.keys()))
+
+#boilerplate function to display each linked image in HTML
+def path_to_image_html(path):
+    return '<img src="'+ path + '" width="40" >'  
+    # + " "  + pd.Series(path).map(reverse_logos).to_string().replace("0", "")
+
+#creating new df and mapping links
+logo_df = finished_df.copy().reset_index(drop=True)
+logo_df['Home_Team'] = logo_df['Home_Team'].map(logos_dict)
+logo_df['Away_Team'] = logo_df['Away_Team'].map(logos_dict)
+
+#displays the dataframe as an HTML object
+st.markdown(logo_df.to_html(escape=False, formatters=dict(Home_Team=path_to_image_html,  Away_Team=path_to_image_html)), unsafe_allow_html=True)
