@@ -1,6 +1,6 @@
 pandas==1.1.5
 requests==2.24.0
-streamlit==0.71.0
+streamlit==0.87.0
 selenium==3.141.0
 lightgbm==3.0.0
 numpy==1.19.0
