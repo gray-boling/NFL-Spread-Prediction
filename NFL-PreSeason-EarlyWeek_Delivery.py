@@ -81,15 +81,15 @@ to_pred = preddf.copy()
 # old drops
 # X_reg = to_pred.drop(['Date','Week','Result','Tm'], axis=1)
 
-X_reg = to_pred.drop(['Week', 'Home', 'Date', 'Tm', 'Result', 'DEF1stD', 'TOOFF'], axis=1)
+X_reg = to_pred.drop(['index', 'Week', 'Home', 'Date', 'Tm', 'Result', 'DEF1stD', 'TOOFF'], axis=1)
 y_reg = to_pred['Tm'].copy()
-X_class = to_pred.drop(['Week', 'Home', 'Date', 'Tm', 'Result', 'DEFPassY',  'OFFTotYd', 'DEF1stD'], axis=1)
+X_class = to_pred.drop(['index', 'Week', 'Home', 'Date', 'Tm', 'Result', 'DEFPassY',  'OFFTotYd', 'DEF1stD'], axis=1)
 y_class = to_pred['Result'].copy()
 
 
 #loading models
-regmodel = lgb.Booster(model_file='NFLregmodel_rmse_3_4_.txt')
-classmodel = lgb.Booster(model_file='classmodel_new_18_logloss.txt')
+regmodel = lgb.Booster(model_file='NFLregmodel_rmse_3_27_home.txt')
+classmodel = lgb.Booster(model_file='classmodel-17-5-home.txt')
 
 #inference
 reg_preds = regmodel.predict(X_reg)
@@ -194,3 +194,6 @@ logo_df['Away_Team'] = logo_df['Away_Team'].map(logos_dict)
 
 #displays the dataframe as an HTML object
 st.markdown(logo_df.to_html(escape=False, formatters=dict(Home_Team=path_to_image_html,  Away_Team=path_to_image_html)), unsafe_allow_html=True)
+
+# pd.set_option('display.max_columns', None)
+# print(finished_df)
