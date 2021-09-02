@@ -58,7 +58,7 @@ df = df[df["Week"].str.contains("Wild Card|Division|Playoffs|Conf. Champ.|SuperB
 # should be updated to not have to exclude playoff strings
 
 
-#builds df with last 3 week avgs
+#builds df with last X week avgs
 df1 = df[pd.to_numeric(df['Week']).between(week - 5, week - 0)]
 df1.reset_index(inplace=True)
 dfavg = df1.groupby(['Team']).agg([np.average]).copy()
