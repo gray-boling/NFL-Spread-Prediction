@@ -5,6 +5,7 @@ A random forest LGBM model and simple inference app to predict the final spread 
 Directory breakdown - 
 
 NFL-Score-Prediction/
+
         2020df_week20v2full.csv - Dataframe used to build the later df for inference
         
         2021df_pretest.csv - Dataframe of earlier games in the year used to build preseason/early week games. Not used later season
@@ -12,11 +13,17 @@ NFL-Score-Prediction/
         classmodel-17-5-home.txt - Current classification model
         
         NFL-PreSeason-EarlyWeek_Delivery.py - Current .py that arranges the data, loads models, and performs inference. Also lays out streamlit app
+        
         NFL2021-PreWeeks_parser.py - Parser to build the "df_pretest" dataframe
+        
         NFLregmodel_rmse_3_27_home.txt - Current regression model
+        
         Procfile - Needed for streamlit app
+        
         README.md
+        
         requirements.txt
+        
         runtime.txt - Needed for streamlit app
 
 Data for training and inference is scrapped from https://www.pro-football-reference.com. The data is parsed on a per team, per week, per year basis. The training data is based on stats from 2018-2020 of play. Going back further in time could help generalization but might also diverge training because of outdated information, non-current players, massive roster changes with the more time included, etc.
