@@ -6,8 +6,11 @@ Directory breakdown -
 
 NFL-Score-Prediction/
         2020df_week20v2full.csv - Dataframe used to build the later df for inference
+        
         2021df_pretest.csv - Dataframe of earlier games in the year used to build preseason/early week games. Not used later season
+        
         classmodel-17-5-home.txt - Current classification model
+        
         NFL-PreSeason-EarlyWeek_Delivery.py - Current .py that arranges the data, loads models, and performs inference. Also lays out streamlit app
         NFL2021-PreWeeks_parser.py - Parser to build the "df_pretest" dataframe
         NFLregmodel_rmse_3_27_home.txt - Current regression model
