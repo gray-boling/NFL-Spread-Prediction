@@ -6,22 +6,24 @@ import streamlit as st
 st.title('NFL Spread Predictor')
 
 st.caption("""
-# How to read the results:
+# **How to read the results:**
 
-## **Margin: Positive numbers are margins predicted in favor of the Home Team. Negative margins are for the Away Team.**
+## **Margin:**
+
+### **Positive numbers are margins predicted in favor of the Home Team. Negative margins are predictions for the Away Team.**
 
 
 ## **Confidence:**
 
-- 1 =  Home Team classified as winner
-- 0 =  Pass, too close to classify either as outright winner
-- -1 = Away Team classified as winner
+### **- 1 =  Home Team classified as winner**
+### **- 0 =  Pass, too close to classify either as outright winner**
+### **- -1 = Away Team classified as winner**
 
 """)
 
 
 st.write("""
-#### For best results only consider games where the margin and confidence models agree on the winning team.
+### **For best results only consider games where the margin and confidence models agree on the winning team.**
 """)
 
 
@@ -46,12 +48,12 @@ df2['Team'] = df2['Team'] .astype('category')
 
 #new auto date detection v1
 today = pd.to_datetime("today")
-last_week = today - pd.to_timedelta(2, unit='D')
-next_week = today + pd.to_timedelta(3, unit='D')
+last_week = today - pd.to_timedelta(6, unit='D')
+next_week = today + pd.to_timedelta(6, unit='D')
 df2['Date'] = pd.to_datetime(df2['Date'], format='%B %d', errors='coerce') + pd.offsets.DateOffset(years=121)
-week = df2.Week.where(((df2['Date'] + pd.to_timedelta(2, unit='D')) < next_week) &
-                     (df2['Date'] - pd.to_timedelta(1, unit='D') > last_week)).dropna()
-week2 = max(week.astype(int))
+week2 = df2.Week.where((df2['Date'] + pd.to_timedelta(4, unit='D') < next_week) & 
+                      (df2['Date'] - pd.to_timedelta(5, unit='D') > last_week)).dropna()
+week2 = max(week2.astype(int))
 week = 17 #used to avg stats from last year for early week game predictions
 
 df = df[df["Week"].str.contains("Wild Card|Division|Playoffs|Conf. Champ.|SuperBowl")==False]  
@@ -190,7 +192,7 @@ reverse_logos = dict(zip(logos_dict.values(), logos_dict.keys()))
 
 #boilerplate function to display each linked image in HTML
 def path_to_image_html(path):
-    return '<img src="'+ path + '" width="40" >'  
+    return '<img src="'+ path + '" width="35" >'  
     # + " "  + pd.Series(path).map(reverse_logos).to_string().replace("0", "")
 
 #creating new df and mapping links
