@@ -40,7 +40,7 @@ df['Opp_Name'] = df['Opp_Name'].astype('category')
 df['Team'] = df['Team'] .astype('category')
 
 #early week/preseason sched
-df_url2 = 'NFL21_week1_full.csv'
+df_url2 = 'NFL21_update_full.csv'
 df2 = pd.read_csv(df_url2)
 df2['Opp_Name'] = df2['Opp_Name'].astype('category')
 df2['Team'] = df2['Team'] .astype('category')
@@ -54,27 +54,28 @@ df2['Date'] = pd.to_datetime(df2['Date'], format='%B %d', errors='coerce') + pd.
 week2 = df2.Week.where((df2['Date'] + pd.to_timedelta(4, unit='D') < next_week) & 
                       (df2['Date'] - pd.to_timedelta(5, unit='D') > last_week)).dropna()
 week2 = max(week2.astype(int))
-week = 17 #used to avg stats from last year for early week game predictions
+week = 16 #used to avg stats from last year for early week game predictions
 
 df = df[df["Week"].str.contains("Wild Card|Division|Playoffs|Conf. Champ.|SuperBowl")==False]  
 # should be updated to not have to exclude playoff strings
 
 #builds df with last X week avgs
-df1 = df[pd.to_numeric(df['Week']).between(week - 4, week - 0)]
+df1 = df[pd.to_numeric(df['Week']).between(1, week)].groupby(['Team']).agg([np.average])
 df1.reset_index(inplace=True)
 
 #2021 stats to concat for avg, use first weeks only then comment out
-dfearly = df2.where(df2.Week == week2 - 1)
+# dfearly = df2.where(df2.Week == week2 - 1) old method
+dfearly = df2.where(df2.Week < week2).groupby(['Team']).agg([np.average]).copy()
 dfearly.reset_index(inplace=True)
 avgs = [df1, dfearly]
 df4 = pd.concat(avgs)
 
 #change to df1 after first few weeks #builds avg df with last season and early weeks stats
 dfavg = df4.groupby(['Team']).agg([np.average]).copy()
-dfavg.columns = ['index', 'Week', 'Result', 'Home', 'Tm',   'Opp',  'OFF1stD',  'OFFTotYd', 'OFFPassY', 'OFFRushY', 'TOOFF',    'DEF1stD',  'DEFTotYd',
-                 'DEFPassY',    'DEFRushY', 'TODEF',    'OffenseEP',    'DefenseEP',    'Sp_TmsEP']
+# dfavg.columns = ['index', 'Week', 'Result', 'Home', 'Tm',   'Opp',  'OFF1stD',  'OFFTotYd', 'OFFPassY', 'OFFRushY', 'TOOFF',    'DEF1stD',  'DEFTotYd',
+#                  'DEFPassY',    'DEFRushY', 'TODEF',    'OffenseEP',    'DefenseEP',    'Sp_TmsEP']
 dfavg = dfavg.reset_index()
-dfavg.drop('index', axis=1, inplace=True)
+# dfavg.drop('index', axis=1, inplace=True)
 
 #builds df with last seasons stats and this seasons pre-season/early week games sched
 preddf = df2[pd.to_numeric(df2['Week']).between(week2, week2)].copy()
@@ -139,17 +140,20 @@ prepared_df['Away_W/L'] = prepared_df.Away_Team.map(opp_w_l_dict)
 
 prepared_df['Margin'] = prepared_df.Home_Score - prepared_df.Away_Score
 prepared_df['Confidence'] = prepared_df['Home_W/L'] - prepared_df['Away_W/L']
-prepared_df.Margin = prepared_df.Margin.round(1)
+prepared_df.Margin = prepared_df.Margin.round(0)
 
 finished_df = prepared_df.drop(['Home_Score', 'Away_Score', 'Home_W/L', 'Away_W/L'], axis=1)
 # finished_df.Home_Team = finished_df.Home_Team.map(team_dict)
 # st.dataframe(finished_df)
 
+# pd.set_option('display.max_columns', None)
+# print(dfavg)
+
 
 #building df with team logos
 
-#@title Attach images to dataframe by team/ test
-# from IPython.display import HTML
+#Attach images to dataframe by team
+from IPython.display import HTML
 
 #Link to .csv file with links to logos per team
 logos = pd.read_csv("https://raw.githubusercontent.com/leesharpe/nfldata/master/data/logos.csv")
@@ -200,7 +204,16 @@ logo_df = finished_df.copy().reset_index(drop=True)
 logo_df['Home_Team'] = logo_df['Home_Team'].map(logos_dict)
 logo_df['Away_Team'] = logo_df['Away_Team'].map(logos_dict)
 
+total_option = [prepared_df['Home_Team'].map(logos_dict), prepared_df['Home_Score'].round(), prepared_df['Away_Team'].map(logos_dict),  prepared_df['Away_Score'].round()] #new df for totals and score
+total_option = pd.concat(total_option, axis=1)
+total_option['Total'] = total_option['Home_Score'] + total_option['Away_Score']
+
 #displays the dataframe as an HTML object
-st.markdown(logo_df.to_html(escape=False, formatters=dict(Home_Team=path_to_image_html,  Away_Team=path_to_image_html)), unsafe_allow_html=True)
+# st.markdown(logo_df.to_html(escape=False, formatters=dict(Home_Team=path_to_image_html,  Away_Team=path_to_image_html)), unsafe_allow_html=True)
 
 
+awesomeness_enabled = st.checkbox('Toggle Totals Chart')
+if not awesomeness_enabled:
+    st.markdown(logo_df.to_html(escape=False, formatters=dict(Home_Team=path_to_image_html,  Away_Team=path_to_image_html)), unsafe_allow_html=True)
+else:
+    st.markdown(total_option.to_html(escape=False, formatters=dict(Home_Team=path_to_image_html,  Away_Team=path_to_image_html)), unsafe_allow_html=True)
