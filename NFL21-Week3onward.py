@@ -54,24 +54,27 @@ df2['Date'] = pd.to_datetime(df2['Date'], format='%B %d', errors='coerce') + pd.
 week2 = df2.Week.where((df2['Date'] + pd.to_timedelta(4, unit='D') < next_week) & 
                       (df2['Date'] - pd.to_timedelta(5, unit='D') > last_week)).dropna()
 week2 = max(week2.astype(int))
+
 week = 16 #used to avg stats from last year for early week game predictions
 
-df = df[df["Week"].str.contains("Wild Card|Division|Playoffs|Conf. Champ.|SuperBowl")==False]  
+# df = df[df["Week"].str.contains("Wild Card|Division|Playoffs|Conf. Champ.|SuperBowl")==False]  
 # should be updated to not have to exclude playoff strings
 
-#builds df with last X week avgs
-df1 = df[pd.to_numeric(df['Week']).between(1, week)].groupby(['Team']).agg([np.average])
-df1.reset_index(inplace=True)
+#builds df with last X week avgs of last season
+# df1 = df[pd.to_numeric(df['Week']).between(1, week)].groupby(['Team']).agg([np.average])
+# df1.reset_index(inplace=True)
 
-#2021 stats to concat for avg, use first weeks only then comment out
-# dfearly = df2.where(df2.Week == week2 - 1) old method
+#2021 stats to concat for avg, use first 4 weeks only then comment out
+
 dfearly = df2.where(df2.Week < week2).groupby(['Team']).agg([np.average]).copy()
 dfearly.reset_index(inplace=True)
-avgs = [df1, dfearly]
-df4 = pd.concat(avgs)
+
+# avgs = [df1, dfearly]
+# df4 = pd.concat(avgs)
 
 #change to df1 after first few weeks #builds avg df with last season and early weeks stats
-dfavg = df4.groupby(['Team']).agg([np.average]).copy()
+# dfavg = df4.groupby(['Team']).agg([np.average]).copy()-
+dfavg = dfearly.copy() #for use after week 4
 # dfavg.columns = ['index', 'Week', 'Result', 'Home', 'Tm',   'Opp',  'OFF1stD',  'OFFTotYd', 'OFFPassY', 'OFFRushY', 'TOOFF',    'DEF1stD',  'DEFTotYd',
 #                  'DEFPassY',    'DEFRushY', 'TODEF',    'OffenseEP',    'DefenseEP',    'Sp_TmsEP']
 dfavg = dfavg.reset_index()
