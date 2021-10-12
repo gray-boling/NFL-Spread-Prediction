@@ -34,6 +34,7 @@ team_dict = {'atl':'Atlanta Falcons', 'buf':'Buffalo Bills', 'car':'Carolina Pan
          'tam':'Tampa Bay Buccaneers', 'was':'Washington Football Team'}
 
 
+#last season's stats
 df_url = '2020df_week20v2full.csv'
 df = pd.read_csv(df_url)
 df['Opp_Name'] = df['Opp_Name'].astype('category')
@@ -55,7 +56,7 @@ week2 = df2.Week.where((df2['Date'] + pd.to_timedelta(4, unit='D') < next_week) 
                       (df2['Date'] - pd.to_timedelta(5, unit='D') > last_week)).dropna()
 week2 = max(week2.astype(int))
 
-week = 16 #used to avg stats from last year for early week game predictions
+# week = 16 #used to avg stats from last year for early week game predictions
 
 # df = df[df["Week"].str.contains("Wild Card|Division|Playoffs|Conf. Champ.|SuperBowl")==False]  
 # should be updated to not have to exclude playoff strings
@@ -64,19 +65,20 @@ week = 16 #used to avg stats from last year for early week game predictions
 # df1 = df[pd.to_numeric(df['Week']).between(1, week)].groupby(['Team']).agg([np.average])
 # df1.reset_index(inplace=True)
 
-#2021 stats to concat for avg, use first 4 weeks only then comment out
+#2021 stats to concat for avg, use first 4 weeks only then comment out the concat
 
 dfearly = df2.where(df2.Week < week2).groupby(['Team']).agg([np.average]).copy()
 dfearly.reset_index(inplace=True)
-
 # avgs = [df1, dfearly]
 # df4 = pd.concat(avgs)
 
 #change to df1 after first few weeks #builds avg df with last season and early weeks stats
 # dfavg = df4.groupby(['Team']).agg([np.average]).copy()-
+
 dfavg = dfearly.copy() #for use after week 4
+
 # dfavg.columns = ['index', 'Week', 'Result', 'Home', 'Tm',   'Opp',  'OFF1stD',  'OFFTotYd', 'OFFPassY', 'OFFRushY', 'TOOFF',    'DEF1stD',  'DEFTotYd',
-#                  'DEFPassY',    'DEFRushY', 'TODEF',    'OffenseEP',    'DefenseEP',    'Sp_TmsEP']
+#                  'DEFPassY',    'DEFRushY', 'TODEF',    'OffenseEP',    'DefenseEP',    'Sp_TmsEP'] 
 dfavg = dfavg.reset_index()
 # dfavg.drop('index', axis=1, inplace=True)
 

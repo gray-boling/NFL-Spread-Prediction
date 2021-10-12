@@ -10,7 +10,7 @@ chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--headless')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--disable-dev-shm-usage')
-driver = webdriver.Chrome('chromedriver', chrome_options=chrome_options)
+driver = webdriver.Chrome('chromedriver', options=chrome_options)
 
 #update teams correctly 'rai', 'rav',
 teams = ['htx', 'kan', 'nyj', 'buf', 'sea', 'atl', 'phi', 'was', 'cle',  'mia', 'nwe', 'gnb', 'min', 'clt', 'jax', 'chi', 'det', 'car', 'sdg', 'cin', 'crd', 'sfo', 'tam', 'nor', 'dal', 'ram', 'pit', 'nyg', 'oti', 'den', 'rai', 'rav']
