@@ -157,7 +157,7 @@ finished_df = prepared_df.drop(['Home_Score', 'Away_Score', 'Home_W/L', 'Away_W/
 
 #building df with team logos
 
-Attach images to dataframe by team
+# Attach images to dataframe by team
 from IPython.display import HTML
 
 #Link to .csv file with links to logos per team
