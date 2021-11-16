@@ -48,4 +48,4 @@ for team in teams:
 driver.close()   
 df = pd.concat(no_table)
 
-df.to_csv('NFL21_update_full.csv')
+df.to_csv('D:/Documents/ML_DOCS/ML Project Files/2021-NFL-Model/NFL-Score-Prediction/NFL21_update_full.csv')
